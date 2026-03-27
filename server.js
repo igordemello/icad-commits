@@ -28,25 +28,45 @@ app.post("/github", async (req, res) => {
     const titulo = mensagem[0];
     const descricao = mensagem.slice(1).join("\n") || "Sem descrição";
 
-    // lista arquivos (máx 10 pra não quebrar o Discord)
+    const totalArquivos = details.files.length;
+
+    const stats = details.stats;
+
     const arquivos = details.files
       .slice(0, 10)
-      .map(f => `• ${f.filename}`)
+      .map(f => {
+        let emoji = "📄";
+
+        if (f.status === "added") emoji = "🟢";
+        if (f.status === "modified") emoji = "🟡";
+        if (f.status === "removed") emoji = "🔴";
+
+        return `${emoji} ${f.filename}`;
+      })
       .join("\n");
 
     const embed = {
       title: `🚀 ${titulo}`,
       description: descricao,
-      color: 0xe74c3c, // 🔴 sempre vermelho
+      color: 0xe74c3c,
+
+      author: {
+        name: commit.author.name,
+        icon_url: details.author?.avatar_url || undefined
+      },
+
       fields: [
-        {
-          name: "👤 Autor",
-          value: commit.author.name,
-          inline: true
-        },
         {
           name: "🌿 Branch",
           value: data.ref.replace("refs/heads/", ""),
+          inline: true
+        },
+        {
+          name: "📊 Alterações",
+          value:
+            `📁 ${totalArquivos} arquivos\n` +
+            `➕ ${stats.additions} linhas\n` +
+            `➖ ${stats.deletions} linhas`,
           inline: true
         },
         {
@@ -54,9 +74,11 @@ app.post("/github", async (req, res) => {
           value: arquivos || "Nenhum arquivo",
         }
       ],
+
       footer: {
-        text: data.repository.name
+        text: `${data.repository.name} • ${new Date().toLocaleString("pt-BR")}`
       },
+
       url: commit.url,
       timestamp: new Date().toISOString()
     };

@@ -29,11 +29,13 @@ app.post("/github", async (req, res) => {
     const descricao = mensagem.slice(1).join("\n") || "Sem descrição";
 
     const totalArquivos = details.files.length;
+    const limite = 10;
 
     const stats = details.stats;
 
-    const arquivos = details.files
-      .slice(0, 10)
+    const arquivosLista = details.files.slice(0, limite);
+
+    let arquivos = arquivosLista
       .map(f => {
         let emoji = "📄";
 
@@ -44,6 +46,12 @@ app.post("/github", async (req, res) => {
         return `${emoji} ${f.filename}`;
       })
       .join("\n");
+
+    // adiciona "ver mais" se necessário
+    if (totalArquivos > limite) {
+      const restantes = totalArquivos - limite;
+      arquivos += `\n\n[🔎 Ver mais (${restantes} restantes...)](${commit.url})`;
+    }
 
     const embed = {
       title: `[Commit feito: "${titulo}"]`,

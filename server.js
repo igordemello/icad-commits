@@ -44,3 +44,7 @@ app.post("/github", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log("Rodando"));
+
+app.get("/", (req, res) => {
+  res.send("Servidor rodando 👍");
+});

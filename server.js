@@ -4,8 +4,6 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1487094062589935707/2B83r4RPkrEi6GTK809l094rjV-ZYwmKdYxeAHieBAX91VgF2KCKwCOY8GKCb8Zv8mXH";
-
 app.post("/github", async (req, res) => {
   const data = req.body;
   const commit = data.head_commit;
@@ -13,8 +11,16 @@ app.post("/github", async (req, res) => {
   if (!commit) return res.sendStatus(200);
 
   try {
-    // pega detalhes do commit (sem token mesmo)
-    const response = await axios.get(commit.url);
+    const repo = data.repository.full_name;
+    const sha = commit.id;
+
+    const apiUrl = `https://api.github.com/repos/${repo}/commits/${sha}`;
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        Authorization: `token ${process.env.GITHUB_TOKEN}`
+      }
+    });
     const details = response.data;
 
     // separa título e descrição
@@ -55,7 +61,7 @@ app.post("/github", async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    await axios.post(DISCORD_WEBHOOK_URL, {
+    await axios.post(process.env.DISCORD_WEBHOOK_URL, {
       embeds: [embed]
     });
 

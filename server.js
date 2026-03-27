@@ -6,6 +6,8 @@ app.use(express.json());
 
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1487094062589935707/2B83r4RPkrEi6GTK809l094rjV-ZYwmKdYxeAHieBAX91VgF2KCKwCOY8GKCb8Zv8mXH";
 
+const PORT = process.env.PORT || 3000;
+
 app.post("/github", async (req, res) => {
   const data = req.body;
 
@@ -41,4 +43,4 @@ app.post("/github", async (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(3000, () => console.log("Rodando na porta 3000"));
+app.listen(PORT, () => console.log("Rodando"));

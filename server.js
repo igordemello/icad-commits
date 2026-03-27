@@ -46,7 +46,7 @@ app.post("/github", async (req, res) => {
       .join("\n");
 
     const embed = {
-      title: `🚀 ${titulo}`,
+      title: `[Commit feito: "${titulo}"]`,
       description: descricao,
       color: 0xe74c3c,
 
@@ -57,12 +57,12 @@ app.post("/github", async (req, res) => {
 
       fields: [
         {
-          name: "🌿 Branch",
+          name: "Branch",
           value: data.ref.replace("refs/heads/", ""),
           inline: true
         },
         {
-          name: "📊 Alterações",
+          name: "Alterações",
           value:
             `📁 ${totalArquivos} arquivos\n` +
             `➕ ${stats.additions} linhas\n` +

@@ -13,6 +13,9 @@ app.post("/github", async (req, res) => {
 
   for (const commit of commits) {
     if (commit.message.startsWith("Merge branch 'main' of")) continue;
+    // "distinct" vem false quando esse SHA já apareceu em outro push (ex: já enviado
+    // ao chat quando o branch da PR recebeu o push original) — evita reenviar no merge
+    if (commit.distinct === false) continue;
     try {
       const repo = data.repository.full_name;
       const sha = commit.id;
